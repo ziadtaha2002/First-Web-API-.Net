@@ -20,7 +20,7 @@ namespace WebApi.Controllers
         {
             List<Product> prodcts = context.Products.ToList();
 
-            return Ok(new { prodcts , Message = "Get all departments" });
+            return Ok(new { prodcts , Message = "Get all products" });
         }
 
         [HttpPost]
