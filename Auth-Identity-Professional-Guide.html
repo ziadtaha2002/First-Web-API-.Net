@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Authentication & Identity Professional Guide</title><style>
+@page{size:A4;margin:16mm}*{box-sizing:border-box}body{margin:0;background:#eef3f8;color:#243447;font:15px/1.65 Segoe UI,Arial,sans-serif}main{max-width:1050px;margin:30px auto;background:#fff;box-shadow:0 8px 35px #183b561f;padding:0 42px 50px}.hero{margin:0 -42px 35px;padding:52px 42px;background:linear-gradient(135deg,#102f50,#087f8c);color:#fff}.hero h1{font-size:42px;line-height:1.15;margin:0 0 12px}.hero p{font-size:18px;margin:5px 0;color:#d9f7f7}.badge{display:inline-block;background:#f7b84b;color:#17324d;border-radius:20px;padding:4px 14px;font-weight:700;margin-bottom:18px}.toc{background:#f1f8f9;border-left:5px solid #087f8c;padding:18px 24px;border-radius:5px}.toc a{color:#075e68;text-decoration:none;font-weight:600}h2{color:#087f8c;font-size:27px;border-bottom:3px solid #b9e4e2;padding-bottom:7px;margin-top:42px}h3{color:#185a7d;margin-bottom:5px}.card{border:1px solid #d8e4ec;border-radius:8px;padding:18px 22px;margin:16px 0;background:#fbfdff}.purpose{background:#fff8e7;border-left:5px solid #f7b84b}.important{background:#fff1f0;border-left:5px solid #d9534f}.success{background:#eefaf4;border-left:5px solid #2e9d68}.flow{background:#172b4d;color:#fff;border-radius:8px;padding:20px;text-align:center;font-size:17px;letter-spacing:.3px;margin:18px 0}.flow span{color:#76e2da;font-weight:700}.code-title{background:#102f50;color:#fff;padding:8px 14px;border-radius:6px 6px 0 0;font-weight:700;margin-top:14px}pre{background:#172b4d;color:#f5f7fa;padding:16px;margin:0 0 16px;border-radius:0 0 6px 6px;overflow:auto;font:13px/1.5 Consolas,monospace}code{color:#b42318;background:#fff2f0;padding:1px 4px;border-radius:3px}pre code{color:inherit;background:none;padding:0}table{width:100%;border-collapse:collapse;margin:15px 0}th{background:#123b63;color:#fff;text-align:left;padding:10px}td{border:1px solid #d4e0e8;padding:9px;vertical-align:top}tr:nth-child(even){background:#f5f9fb}.tree{font-family:Consolas,monospace;background:#f4f8fb;padding:18px;border-radius:7px;color:#185a7d}.step{display:flex;gap:15px;align-items:flex-start;margin:15px 0}.num{flex:0 0 34px;height:34px;border-radius:50%;background:#087f8c;color:white;text-align:center;padding-top:3px;font-weight:bold}.check{font-size:18px;color:#087f8c}.small{color:#60758a;font-size:13px}.footer{margin-top:45px;border-top:1px solid #d4e0e8;padding-top:15px;color:#60758a;text-align:center}@media print{body{background:#fff}main{box-shadow:none;margin:0;max-width:none;padding:0}.hero{margin:0 -0 25px}.card{break-inside:avoid}h2{break-after:avoid}}
+</style></head><body><main>
+<section class="hero"><span class="badge">WEBAPI .NET 9 • PROJECT ROADMAP</span><h1>Authentication &amp; ASP.NET Core Identity</h1><p>A professional, project-based guide from registration to JWT protection</p><p class="small" style="color:#c9eeee">Built from the AccountController, ApplicationUser, ITIContext, and JWT work in this project.</p></section>
+<div class="toc"><h3>How to use this guide</h3><p>Read one level, perform its practice task, test it in Swagger, then continue. Do not memorize the code first; understand the data flow.</p><ol><li><a href="#map">Read the learning map.</a></li><li><a href="#project">Connect every concept to your project.</a></li><li><a href="#register">Review registration.</a></li><li><a href="#jwt">Review JWT login.</a></li><li><a href="#next">Continue with protected endpoints.</a></li></ol></div>
+<h2 id="map">01 • Hierarchical learning map</h2><div class="card"><h3>Level 1 — Identity foundation</h3><p>Understand users, passwords, Identity tables, <code>UserManager</code>, and the database context.</p></div><div class="card"><h3>Level 2 — Registration</h3><p>Receive a request DTO, validate it, create an <code>ApplicationUser</code>, and let Identity hash the password.</p></div><div class="card"><h3>Level 3 — JWT login</h3><p>Find the user, verify the password, create claims, sign a JWT, and return it in a response DTO.</p></div><div class="card"><h3>Level 4 — Authorization</h3><p>Protect endpoints with <code>[Authorize]</code>, configure Swagger, and control access using roles and claims.</p></div><div class="card"><h3>Level 5 — Production quality</h3><p>Use secrets safely, validation, refresh tokens, lockout, HTTPS, error handling, and audit logging.</p></div>
+<h2 id="project">02 • Your project architecture</h2><div class="tree">WebApi/<br>├── Controllers/<br>│   └── AccountController.cs&nbsp;&nbsp; ← register and login endpoints<br>├── DTO/<br>│   ├── RegisterDTO.cs&nbsp;&nbsp; ← registration input<br>│   ├── LoginDTO.cs&nbsp;&nbsp; ← login input<br>│   ├── LoginResponseDTO.cs&nbsp;&nbsp; ← token output<br>│   └── General Response.cs&nbsp;&nbsp; ← common response wrapper<br>├── Models/<br>│   ├── ApplicationUser.cs&nbsp;&nbsp; ← Identity user<br>│   └── ITIContext.cs&nbsp;&nbsp; ← Identity database context<br>├── Migrations/<br>│   └── AddAuthTable.cs&nbsp;&nbsp; ← AspNet tables<br>├── Program.cs&nbsp;&nbsp; ← services and middleware<br>└── appsettings.json&nbsp;&nbsp; ← JWT settings</div><div class="purpose card"><b>Simple rule:</b> DTOs describe API data, models describe database data, controllers coordinate the request, and Identity performs secure user operations.</div>
+<h2>03 • The complete security flow</h2><div class="flow"><span>Register DTO</span> → <span>ApplicationUser</span> → <span>Identity password hash</span> → <span>AspNetUsers</span><br><br><span>Login DTO</span> → <span>CheckPasswordAsync</span> → <span>JWT claims</span> → <span>Signed token</span> → <span>Authorize</span></div><table><tr><th>Question</th><th>Component</th><th>Responsibility</th></tr><tr><td>What data comes from the client?</td><td>Request DTO</td><td>Receives and validates input.</td></tr><tr><td>What is stored?</td><td>ApplicationUser</td><td>Represents the Identity user.</td></tr><tr><td>How is the password protected?</td><td>UserManager</td><td>Hashes and verifies passwords.</td></tr><tr><td>How does the next request identify the user?</td><td>JWT</td><td>Carries signed claims.</td></tr><tr><td>Who may access the endpoint?</td><td>Authorization</td><td>Checks authentication, roles, and policies.</td></tr></table>
+<h2 id="register">04 • Registration: step by step</h2><div class="step"><div class="num">1</div><div><h3>Client sends registration JSON</h3><pre>{
+  "userName": "Font",
+  "email": "font@example.com",
+  "password": "Font123#"
+}</pre></div></div><div class="step"><div class="num">2</div><div><h3>RegisterDTO receives the data</h3><pre>public class RegisterDTO
+{
+    public string UserName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}</pre><p><code>string.Empty</code> gives a safe initial value. Attributes such as <code>[Required]</code> perform validation.</p></div></div><div class="step"><div class="num">3</div><div><h3>Create the Identity user</h3><pre>ApplicationUser user = new ApplicationUser
+{
+    UserName = request.UserName,
+    Email = request.Email
+};</pre></div></div><div class="step"><div class="num">4</div><div><h3>Let Identity handle the password</h3><pre>IdentityResult result = await _userManager.CreateAsync(
+    user,
+    request.Password);</pre><p class="important card"><b>Important:</b> Do not manually set <code>PasswordHash</code> when using this overload. Identity validates the password and hashes it safely.</p></div></div><div class="success card"><b>Successful registration means:</b> the user exists in <code>AspNetUsers</code>, while the original password is not stored.</div>
+<h2>05 • Identity configuration</h2><div class="code-title">ApplicationUser.cs</div><pre>public class ApplicationUser : IdentityUser
+{
+    public string? Address { get; set; }
+}</pre><div class="code-title">ITIContext.cs</div><pre>public class ITIContext : IdentityDbContext&lt;ApplicationUser&gt;
+{
+    public ITIContext(DbContextOptions&lt;ITIContext&gt; options)
+        : base(options) { }
+}</pre><div class="code-title">Program.cs</div><pre>builder.Services.AddIdentity&lt;ApplicationUser, IdentityRole&gt;()
+    .AddEntityFrameworkStores&lt;ITIContext&gt;();</pre><p>These three pieces connect the user model, Identity services, and database tables.</p>
+<h2 id="jwt">06 • JWT login: step by step</h2><div class="step"><div class="num">1</div><div><h3>Receive LoginDTO</h3><pre>public class LoginDTO
+{
+    public string UserName { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}</pre></div></div><div class="step"><div class="num">2</div><div><h3>Find the user</h3><pre>ApplicationUser? user =
+    await _userManager.FindByNameAsync(loginDto.UserName);</pre><p>If the user does not exist, return <code>401 Unauthorized</code>. Use the same message for invalid username and invalid password.</p></div></div><div class="step"><div class="num">3</div><div><h3>Verify the password</h3><pre>bool valid = await _userManager
+    .CheckPasswordAsync(user, loginDto.Password);</pre><p>Identity compares the entered password with the stored hash. Never compare plain text passwords yourself.</p></div></div><div class="step"><div class="num">4</div><div><h3>Create claims</h3><pre>new Claim(ClaimTypes.NameIdentifier, user.Id)
+new Claim(ClaimTypes.Name, user.UserName ?? string.Empty)
+new Claim(ClaimTypes.Email, user.Email ?? string.Empty)</pre><p>Claims identify the user. Never place a password or password hash in a claim.</p></div></div><div class="step"><div class="num">5</div><div><h3>Sign and return the token</h3><p>The server uses the secret key to sign the JWT. The client receives only the token and expiration time.</p><pre>public class LoginResponseDTO
+{
+    public string Token { get; set; } = string.Empty;
+    public DateTime Expiration { get; set; }
+}</pre></div></div>
+<h2>07 • JWT settings and validation</h2><pre>"Jwt": {
+  "Key": "long-development-secret",
+  "Issuer": "WebApi",
+  "Audience": "WebApiClient",
+  "DurationInMinutes": 60
+}</pre><table><tr><th>Setting</th><th>Simple meaning</th></tr><tr><td>Key</td><td>Secret used to sign and verify the token.</td></tr><tr><td>Issuer</td><td>The application that created the token.</td></tr><tr><td>Audience</td><td>The client intended to use the token.</td></tr><tr><td>Duration</td><td>How long the token remains valid.</td></tr></table><div class="important card"><b>Production rule:</b> never commit a real JWT key to GitHub. Use User Secrets, environment variables, or a secret manager.</div><h3>Middleware order</h3><pre>app.UseAuthentication();
+app.UseAuthorization();</pre><p>Authentication identifies the user first. Authorization checks permissions second.</p>
+<h2>08 • General response integration</h2><pre>return Ok(new General_Response&lt;LoginResponseDTO&gt;
+{
+    isSuccess = true,
+    Message = "Login successful",
+    Data = loginResponse
+});</pre><p><code>General_Response&lt;T&gt;</code> gives every endpoint a predictable shape: success status, message, and data.</p><pre>{
+  "isSuccess": true,
+  "message": "Login successful",
+  "data": {
+    "token": "eyJ...",
+    "expiration": "..."
+  }
+}</pre>
+<h2>09 • What you already tested</h2><div class="success card"><p><span class="check">✓</span> Registration succeeded.</p><p><span class="check">✓</span> Identity stored the user.</p><p><span class="check">✓</span> Login found the user.</p><p><span class="check">✓</span> The password was verified.</p><p><span class="check">✓</span> A JWT token was generated.</p><p><span class="check">✓</span> Swagger returned HTTP 200 and the token.</p></div>
+<h2 id="next">10 • Next mission: protect an endpoint</h2><div class="step"><div class="num">1</div><div><h3>Add Authorize</h3><pre>[Authorize]
+[HttpGet("protected")]
+public IActionResult Protected()
+{
+    return Ok("You are authenticated");
+}</pre></div></div><div class="step"><div class="num">2</div><div><h3>Configure Swagger Bearer security</h3><p>Add a security definition so Swagger displays an <b>Authorize</b> button.</p></div></div><div class="step"><div class="num">3</div><div><h3>Test both cases</h3><table><tr><th>Request</th><th>Expected result</th></tr><tr><td>No token</td><td>401 Unauthorized</td></tr><tr><td>Valid token</td><td>200 OK</td></tr><tr><td>Expired or modified token</td><td>401 Unauthorized</td></tr></table></div></div>
+<h2>11 • Mistakes to remember</h2><ul><li>Do not return passwords, password hashes, or complete Identity users.</li><li>Do not manually compare passwords.</li><li>Use <code>CreateAsync(user, password)</code> for registration.</li><li>Keep <code>CreateToken</code> private; it is not an endpoint.</li><li>Return the token DTO in <code>Data</code>, not <code>null</code>.</li><li>Place <code>UseAuthentication</code> before <code>UseAuthorization</code>.</li><li>Do not expose real JWT secrets in source control.</li><li>Use a generic authentication error message.</li></ul>
+<h2>12 • New-project implementation checklist</h2><table><tr><th>Done</th><th>Task</th><th>Reason</th></tr><tr><td>☐</td><td>Install Identity and JWT packages</td><td>Provides secure user and token services.</td></tr><tr><td>☐</td><td>Create ApplicationUser</td><td>Defines the application user.</td></tr><tr><td>☐</td><td>Use IdentityDbContext</td><td>Creates Identity database tables.</td></tr><tr><td>☐</td><td>Create migration and update database</td><td>Applies the schema.</td></tr><tr><td>☐</td><td>Create request and response DTOs</td><td>Controls API data.</td></tr><tr><td>☐</td><td>Implement registration</td><td>Creates a hashed-password user.</td></tr><tr><td>☐</td><td>Add JWT settings safely</td><td>Controls token creation and validation.</td></tr><tr><td>☐</td><td>Configure authentication middleware</td><td>Reads and validates tokens.</td></tr><tr><td>☐</td><td>Implement login</td><td>Returns a JWT after verification.</td></tr><tr><td>☐</td><td>Protect and test an endpoint</td><td>Proves authorization works.</td></tr></table>
+<h2>13 • Encouragement</h2><div class="hero" style="margin:20px 0 0;padding:25px"><h3 style="color:#fff;margin:0">You built a real authentication foundation.</h3><p style="font-size:16px">You moved from registration to secure password verification and successfully generated a JWT. The next step is not starting over; it is simply using that token to protect your API.</p></div><div class="footer">Authentication &amp; Identity Professional Guide • WebApi .NET 9</div></main></body></html>
